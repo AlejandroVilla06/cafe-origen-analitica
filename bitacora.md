@@ -171,3 +171,55 @@ Al duplicar n, el tiempo se multiplica aproximadamente por **4** (2² = 4). Esto
 ### Conclusión para la gerente
 
 Doña gerente: el reporte de clientes recurrentes funciona bien con pocos datos, pero se vuelve lento porque compara **cada venta contra todas las demás**. Con 12 ventas hace 66 comparaciones y es instantáneo. Pero con el historial anual de 100.000 ventas hace casi **5 mil millones** de comparaciones — como si para buscar un nombre en una agenda de 1.000 páginas, leyera completa la agenda 1.000 veces. Por eso tarda más de un minuto. La buena noticia: hay formas más inteligentes de hacer esta consulta que la resolverían en menos de un segundo.
+
+## MiniReto 7: Tiempo, memoria y cadenas de métodos
+
+### Dos versiones de totalCiudad
+
+**`totalCiudadCadena(ventas, ciudad)`** — encadena `.map().filter().map().reduce()`:
+- 4 recorridos completos del arreglo (o subconjuntos)
+- 3 arreglos intermedios creados (map→[], filter→[], map→[])
+- Tiempo: O(n) — se simplifica porque O(4n) = O(n) (constantes se eliminan)
+- Espacio: **O(n)** — los arreglos intermedios pueden ser tan grandes como la entrada
+
+**`totalCiudadUnaPasada(ventas, ciudad)`** — un solo `for...of`:
+- 1 recorrido completo
+- 0 arreglos intermedios
+- Tiempo: O(n)
+- Espacio: **O(1)** — solo usa una variable `total`
+
+### Verificación
+
+Con 10.000 ventas generadas, ambas devuelven exactamente el mismo valor: **302.244.000**.
+
+### ¿Por qué O(4n) = O(n)?
+
+Big O describe el **orden de crecimiento**, no el tiempo exacto. Si n se multiplica por 10, ambas versiones hacen ×10 más trabajo. La constante 4 no cambia la forma de la curva, solo la desplaza. Por eso se simplifica: O(4n) → O(n).
+
+Pero en la práctica, recorrer 4 veces con arreglos intermedios usa más memoria y más tiempo de reloj que una pasada.
+
+### Clasificación espacial de todas las funciones del motor
+
+| Función                | Espacio   | Justificación                                              |
+|-----------------------|-----------|-----------------------------------------------------------|
+| totalVendido          | O(1)      | Solo un acumulador `total`                                 |
+| unidadesVendidas      | O(1)      | Solo un acumulador `unidades`                              |
+| ventaMayor            | O(1)      | Solo `mayor` y `valorMayor`                                |
+| ticketPromedio        | O(1)      | Dos variables: `total` y `validas`                         |
+| ventasPorCiudad       | O(1)      | Solo un acumulador                                         |
+| contarVentasValidas   | O(1)      | Solo un contador                                           |
+| totalVendidoM         | O(1)      | `.reduce()` con acumulador, sin arreglo intermedio         |
+| unidadesVendidasM     | O(1)      | `.reduce()` con acumulador                                 |
+| ventasPorCiudadM      | **O(n)**  | `.filter()` y `.map()` crean arreglos intermedios          |
+| totalPorCiudad        | **O(c)**  | Crea un objeto con c entradas (c = ciudades únicas)        |
+| unidadesPorProducto   | **O(p)**  | Crea un objeto con p entradas (p = productos únicos)       |
+| topProductosPorValor  | **O(p)**  | Copia del objeto de productos + sort                       |
+| ventasOrdenadasPorValor| **O(n)** | Crea una copia completa del arreglo con spread `[...]`     |
+| ventasDelDia          | **O(n)**  | `.filter()` crea un subarreglo                             |
+| totalCiudadCadena     | **O(n)**  | 3 arreglos intermedios                                     |
+| totalCiudadUnaPasada  | O(1)      | Solo un acumulador                                         |
+| clientesRecurrentes   | **O(k)**  | Arreglo `recurrentes` crece hasta k clientes únicos        |
+
+### Decisión final
+
+Dejamos **`totalCiudadUnaPasada`** en el motor para producción. Razón: mismo resultado, O(1) en espacio vs O(n), y un solo recorrido. En un servidor con memoria limitada del marketplace, crear 3 arreglos intermedios con 100.000 ventas es desperdicio. La cadena de métodos es más legible, pero en este contexto la eficiencia pesa más.

@@ -236,6 +236,28 @@ function ventasDelDia(ventas, fecha) {
   };
 }
 
+// === MR7 DÍA 2: CADENA DE MÉTODOS vs. UNA PASADA ===
+
+function totalCiudadCadena(ventas, ciudad) {
+  const buscada = ciudad.toLowerCase().trim();
+  return ventas
+    .map((v) => ({ ...v, ciudadNorm: v.ciudad.toLowerCase().trim() }))
+    .filter((v) => v.ciudadNorm === buscada)
+    .map((v) => v.cantidad * v.precio)
+    .reduce((sum, val) => sum + val, 0);
+}
+
+function totalCiudadUnaPasada(ventas, ciudad) {
+  const buscada = ciudad.toLowerCase().trim();
+  let total = 0;
+  for (const v of ventas) {
+    if (v.ciudad.toLowerCase().trim() === buscada) {
+      total += v.cantidad * v.precio;
+    }
+  }
+  return total;
+}
+
 // === MR6 DÍA 2: CLIENTES RECURRENTES (O(n²)) ===
 
 function clientesRecurrentes(ventas) {
@@ -318,6 +340,8 @@ module.exports = {
   ventasOrdenadasPorValor,
   esFechaValida,
   ventasDelDia,
+  totalCiudadCadena,
+  totalCiudadUnaPasada,
   clientesRecurrentes,
   totalVendidoInst,
   ventaMayorInst,
