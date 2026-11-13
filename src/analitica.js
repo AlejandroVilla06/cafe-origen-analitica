@@ -236,6 +236,21 @@ function ventasDelDia(ventas, fecha) {
   };
 }
 
+// === MR6 DÍA 2: CLIENTES RECURRENTES (O(n²)) ===
+
+function clientesRecurrentes(ventas) {
+  const recurrentes = [];
+  for (let i = 0; i < ventas.length; i++) {
+    for (let j = i + 1; j < ventas.length; j++) {
+      if (ventas[i].cliente === ventas[j].cliente &&
+          !recurrentes.includes(ventas[i].cliente)) {
+        recurrentes.push(ventas[i].cliente);
+      }
+    }
+  }
+  return recurrentes;
+}
+
 // === MR5 DÍA 2: VERSIONES INSTRUMENTADAS CON CONTADOR ===
 // Reciben un objeto contador por referencia y suman 1 por cada operación
 // Req. técnico: paso de objetos por referencia para el contador
@@ -303,6 +318,7 @@ module.exports = {
   ventasOrdenadasPorValor,
   esFechaValida,
   ventasDelDia,
+  clientesRecurrentes,
   totalVendidoInst,
   ventaMayorInst,
   totalPorCiudadInst,

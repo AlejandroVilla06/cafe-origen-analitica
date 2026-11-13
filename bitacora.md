@@ -117,3 +117,57 @@ Si n se multiplica por 10:
 Las predicciones se cumplieron exactamente:
 - `totalVendido`, `ventaMayor`, `totalPorCiudad`: cuando n crece ×10, las operaciones crecen ×10. **O(n)**.
 - `primeraVenta`: siempre 1 operación sin importar n. **O(1)**.
+
+## MiniReto 6: El reporte que se volvió lento
+
+### Verificación con datos del Día 1
+
+`clientesRecurrentes(ventas)` devuelve `["C01", "C02", "C03"]` — correcto. Son los tres clientes que compraron más de una vez.
+
+### Traza con 5 ventas
+
+Supongamos ventas con clientes: `[C01, C02, C01, C03, C02]`
+
+```
+i=0 (C01): j=1(C02≠) j=2(C01=, push C01) j=3(C03≠) j=4(C02≠) → 4 comparaciones
+i=1 (C02): j=2(C01≠) j=3(C03≠) j=4(C02=, push C02)            → 3 comparaciones
+i=2 (C01): j=3(C03≠) j=4(C02≠)                                 → 2 comparaciones
+i=3 (C03): j=4(C02≠)                                            → 1 comparación
+i=4 (C02): (sin j)                                               → 0
+
+Total: 4 + 3 + 2 + 1 + 0 = 10 comparaciones
+```
+
+### Generalización
+
+Con n ventas: `n × (n − 1) / 2` comparaciones del ciclo anidado.
+
+- 5 ventas: 10
+- 100 ventas: 4.950
+- 1.000 ventas: 499.500
+- 10.000 ventas: 49.995.000
+
+### Tabla de tiempos medidos
+
+| n      | Tiempo      | Factor (vs. anterior) |
+|--------|------------|----------------------|
+| 1.000  | 6,77 ms    | —                    |
+| 2.000  | 22,57 ms   | ×3,3                 |
+| 4.000  | 99,82 ms   | ×4,4                 |
+| 8.000  | 423,29 ms  | ×4,2                 |
+| 16.000 | 1.339,67 ms| ×3,2                 |
+
+Al duplicar n, el tiempo se multiplica aproximadamente por **4** (2² = 4). Esto confirma **O(n²)**.
+
+### Estimaciones calculadas
+
+- **100.000 ventas**: ~52 s (estimación) → **64 s** (medido real)
+- **1.000.000 ventas**: ~87 minutos (estimación basada en mediciones)
+
+### Costo oculto: `includes()`
+
+`recurrentes.includes()` también recorre un arreglo. En el peor caso (muchos clientes distintos), el arreglo `recurrentes` crece hasta k elementos, y cada `includes` es O(k). Esto añade un factor adicional: el peor caso total es O(n² × k), donde k es el número de clientes únicos. Si todos los clientes fueran distintos (k = n), la complejidad llegaría a **O(n³)**.
+
+### Conclusión para la gerente
+
+Doña gerente: el reporte de clientes recurrentes funciona bien con pocos datos, pero se vuelve lento porque compara **cada venta contra todas las demás**. Con 12 ventas hace 66 comparaciones y es instantáneo. Pero con el historial anual de 100.000 ventas hace casi **5 mil millones** de comparaciones — como si para buscar un nombre en una agenda de 1.000 páginas, leyera completa la agenda 1.000 veces. Por eso tarda más de un minuto. La buena noticia: hay formas más inteligentes de hacer esta consulta que la resolverían en menos de un segundo.
