@@ -223,3 +223,21 @@ Pero en la práctica, recorrer 4 veces con arreglos intermedios usa más memoria
 ### Decisión final
 
 Dejamos **`totalCiudadUnaPasada`** en el motor para producción. Razón: mismo resultado, O(1) en espacio vs O(n), y un solo recorrido. En un servidor con memoria limitada del marketplace, crear 3 arreglos intermedios con 100.000 ventas es desperdicio. La cadena de métodos es más legible, pero en este contexto la eficiencia pesa más.
+
+## MiniReto 8: Analítica v0.2 — el informe de rendimiento
+
+### Entregable
+
+Se creó `RENDIMIENTO.md` en la raíz del repositorio con:
+
+1. **Tabla completa** de todas las funciones del motor con complejidad temporal, espacial y justificación basada en el código.
+2. **Proyección** de tiempos para 1.000.000 de ventas calculada a partir de las mediciones reales.
+3. **Riesgos** ordenados de mayor a menor: `clientesRecurrentes` es el riesgo crítico (O(n²), 64 s con 100k).
+4. **Plan de optimización**: usar un Map para contar apariciones de cada cliente en un solo recorrido, convirtiendo O(n²) en O(n).
+
+### Revisión de un compañero
+
+El informe fue revisado y se confirmó que:
+- La clasificación Big O de cada función es consistente con el código fuente.
+- Las estimaciones para 1.000.000 de ventas son coherentes con los factores de crecimiento medidos.
+- La explicación para la gerente (MR6) traduce correctamente el problema técnico a lenguaje de negocio.
