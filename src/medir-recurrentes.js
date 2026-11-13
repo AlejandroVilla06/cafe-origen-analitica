@@ -2,12 +2,12 @@ const { generarVentas } = require("./generador");
 const { clientesRecurrentes } = require("./analitica");
 const ventas12 = require("./datos");
 
-// Paso 1: verificar con los 12 datos del Día 1
+// Verificar con los 12 datos originales
 const resultado12 = clientesRecurrentes(ventas12);
 console.log("Clientes recurrentes (12 ventas):", resultado12);
 console.log("Esperado: C01, C02, C03\n");
 
-// Paso 4: medir tiempos con tamaños que se duplican
+// Medir tiempos con tamaños que se duplican
 const tamanios = [1000, 2000, 4000, 8000, 16000];
 const resultados = [];
 
@@ -25,7 +25,6 @@ for (const n of tamanios) {
 console.log("Tabla de tiempos — clientesRecurrentes O(n²):\n");
 console.table(resultados);
 
-// Paso 5: factor de crecimiento
 console.log("\nFactor de crecimiento (al duplicar n):\n");
 for (let i = 1; i < resultados.length; i++) {
   const tAnterior = parseFloat(resultados[i - 1].tiempo);
@@ -38,7 +37,7 @@ for (let i = 1; i < resultados.length; i++) {
   );
 }
 
-// Paso 6: estimación para 100.000 y 1.000.000
+// Estimación basada en crecimiento cuadrático
 const ultimo = parseFloat(resultados[resultados.length - 1].tiempo);
 const nUltimo = resultados[resultados.length - 1].n;
 

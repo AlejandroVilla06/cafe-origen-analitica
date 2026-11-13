@@ -12,7 +12,6 @@ console.log(`  Cadena (map.filter.map.reduce): ${resultadoCadena}`);
 console.log(`  Una pasada (for...of):          ${resultadoUnaPasada}`);
 console.log(`  Iguales: ${resultadoCadena === resultadoUnaPasada ? "SI" : "NO"}\n`);
 
-// Medir tiempos con 100.000 ventas
 const ventasGrandes = generarVentas(100000);
 
 console.time("  Cadena (100k)");
