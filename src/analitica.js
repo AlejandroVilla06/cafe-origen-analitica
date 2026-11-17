@@ -281,6 +281,61 @@ function clientesRecurrentesMap(ventas) {
   return recurrentes;
 }
 
+// MR11: O(n × k) — suma cada bloque de k días desde cero
+function mejorSemanaBruta(dias, k) {
+  if (k > dias.length) return null;
+  let mejorTotal = 0;
+  let mejorInicio = 0;
+  for (let i = 0; i <= dias.length - k; i++) {
+    let suma = 0;
+    for (let j = i; j < i + k; j++) suma += dias[j];
+    if (suma > mejorTotal) {
+      mejorTotal = suma;
+      mejorInicio = i;
+    }
+  }
+  return { inicio: mejorInicio, total: mejorTotal };
+}
+
+// MR11: O(n) — ventana deslizante de tamaño fijo
+function mejorSemana(dias, k) {
+  if (k > dias.length) return null;
+  let suma = 0;
+  for (let i = 0; i < k; i++) suma += dias[i];
+  let mejorTotal = suma;
+  let mejorInicio = 0;
+  for (let i = k; i < dias.length; i++) {
+    suma += dias[i] - dias[i - k];
+    if (suma > mejorTotal) {
+      mejorTotal = suma;
+      mejorInicio = i - k + 1;
+    }
+  }
+  return { inicio: mejorInicio, total: mejorTotal };
+}
+
+// MR11: O(n log n) — dos punteros sobre precios ordenados
+function parMasCercano(catalogo, presupuesto) {
+  const ordenados = [...catalogo].sort((a, b) => a.precio - b.precio);
+  let izq = 0;
+  let der = ordenados.length - 1;
+  let mejorPar = null;
+  let mejorSuma = 0;
+  while (izq < der) {
+    const suma = ordenados[izq].precio + ordenados[der].precio;
+    if (suma <= presupuesto) {
+      if (suma > mejorSuma) {
+        mejorSuma = suma;
+        mejorPar = [ordenados[izq].producto, ordenados[der].producto];
+      }
+      izq++;
+    } else {
+      der--;
+    }
+  }
+  return mejorPar;
+}
+
 // MR10: O(n²) — prueba todos los pares
 function comboRegaloBruto(catalogo, valor) {
   for (let i = 0; i < catalogo.length; i++) {
@@ -419,6 +474,9 @@ module.exports = {
   clientesRecurrentesSet,
   comprasPorCliente,
   clientesRecurrentesMap,
+  mejorSemanaBruta,
+  mejorSemana,
+  parMasCercano,
   comboRegaloBruto,
   comboRegalo,
   productoEstrellaPorCiudad,

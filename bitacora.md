@@ -338,3 +338,65 @@ Resultado con datos del Día 1: **C04** ✓ (compró Origen Sierra 500 g el 2026
 | primerClienteUnico         | O(n)   | O(c)    |
 
 Todas son O(n) en tiempo: recorren las ventas/catálogo una o dos veces, sin ciclos anidados sobre los datos.
+
+## MiniReto 11: La mejor racha y el presupuesto exacto
+
+### mejorSemana — ventana deslizante
+
+**Fuerza bruta** (`mejorSemanaBruta`): para cada posición, suma k días desde cero. O(n × k).
+
+**Optimizada** (`mejorSemana`): calcula la primera ventana, luego suma el que entra y resta el que sale. O(n).
+
+#### Traza de las 3 primeras posiciones (k=7)
+
+```
+Ventana 0: [320, 410, 280, 390, 510, 620, 700] → total = 3.230
+Ventana 1: [410, 280, 390, 510, 620, 700, 300] → +300 -320 = 3.210
+Ventana 2: [280, 390, 510, 620, 700, 300, 290] → +290 -410 = 3.090
+```
+
+#### Resultado septiembre
+
+Mejor semana: **día 23** (días 23–29) con total **$3.670** (en miles).
+
+#### Verificación
+
+| Conjunto       | Fuerza bruta | Ventana | ¿Iguales? | Tiempo bruta | Tiempo ventana |
+|----------------|-------------|---------|-----------|-------------|----------------|
+| 30 días sept.  | 3.670       | 3.670   | ✓         | —           | —              |
+| 100.000 aleatorios | 6.377   | 6.377   | ✓         | 2,06 ms     | 0,87 ms        |
+
+Caso borde: k > días → `null` ✓
+
+### parMasCercano — dos punteros
+
+Dos punteros desde los extremos de los precios ordenados. Si la suma cabe en el presupuesto, movemos el izquierdo para buscar una suma mayor; si se pasa, movemos el derecho para bajar.
+
+#### Traza para presupuesto $100.000
+
+```
+izq=Filtros ($18k) + der=Molino ($120k) = $138k → se pasa, ←der
+izq=Filtros ($18k) + der=Prensa ($95k)  = $113k → se pasa, ←der
+izq=Filtros ($18k) + der=Huila 1kg ($79k) = $97k → cabe ✓, izq→
+izq=Nariño ($26k)  + der=Huila 1kg ($79k) = $105k → se pasa, ←der
+izq=Nariño ($26k)  + der=Sierra ($45k)  = $71k → cabe, izq→
+izq=Taza ($35k)    + der=Sierra ($45k)  = $80k → cabe, izq→
+izq=Huila 500g ($42k) + der=Sierra ($45k) = $87k → cabe, izq→
+Mejor par: Filtros + Huila 1kg = $97.000
+```
+
+#### Pruebas
+
+| Presupuesto | Resultado                              |
+|-------------|----------------------------------------|
+| $100.000    | Filtros de papel x100 + Origen Huila 1 kg ($97.000) |
+| $140.000    | Origen Sierra 500 g + Prensa francesa ($140.000)    |
+| $40.000     | null (ningún par cabe)                 |
+
+### Clasificación de complejidad
+
+| Función            | Tiempo      | Espacio | Justificación                                    |
+|--------------------|------------|---------|--------------------------------------------------|
+| mejorSemanaBruta   | O(n × k)   | O(1)    | Dos ciclos: n posiciones × k sumas cada una      |
+| mejorSemana        | O(n)       | O(1)    | Un solo recorrido, ajustando la ventana           |
+| parMasCercano      | O(n log n) | O(n)    | sort es O(n log n), luego los punteros son O(n)   |
