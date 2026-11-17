@@ -400,3 +400,52 @@ Mejor par: Filtros + Huila 1kg = $97.000
 | mejorSemanaBruta   | O(n × k)   | O(1)    | Dos ciclos: n posiciones × k sumas cada una      |
 | mejorSemana        | O(n)       | O(1)    | Un solo recorrido, ajustando la ventana           |
 | parMasCercano      | O(n log n) | O(n)    | sort es O(n log n), luego los punteros son O(n)   |
+
+## MiniReto 12: Analítica Café Origen v1.0 — lanzamiento
+
+### Cambios realizados
+
+- **reporte.js** actualizado a v1.0: integra las 6 secciones nuevas (clientes recurrentes, producto estrella por ciudad, combo de regalo, cliente para cupón, mejor semana, par más cercano al presupuesto).
+- **process.argv**: `node src/reporte.js 100000` genera n ventas sintéticas para pruebas de rendimiento.
+- **Medición de tiempos**: el reporte muestra el tiempo total de ejecución.
+- **comparar-versiones.js**: benchmark v0.1 vs v1.0 con mediciones reales.
+- **RENDIMIENTO.md**: tabla de complejidades completa (28 funciones), comparación v0.1 vs v1.0.
+- **README.md**: documentación de producto — descripción, cómo ejecutar, preguntas que responde, estructura.
+
+### Resultado del benchmark
+
+| Versión | 10.000 ventas | 100.000 ventas |
+|---------|--------------|----------------|
+| v0.1 | 651 ms | 70 s |
+| v1.0 | 76 ms | 622 ms |
+| Mejora | 8,6× | 112,9× |
+
+Ninguna función del reporte final es O(n²).
+
+---
+
+## Cierre de la semana — Resumen de los 12 MiniRetos
+
+| MR | Nombre | Estrategia de optimización |
+|----|--------|---------------------------|
+| 1 | Primer tueste: repositorio y datos | Modelo de datos, casos borde, diccionario |
+| 2 | Primer reporte | Funciones puras, acumuladores O(n) |
+| 3 | Escalar los datos | Generador sintético, benchmarks |
+| 4 | Versiones funcionales | .reduce(), .filter(), encadenamiento |
+| 5 | Agrupar y clasificar | Agrupación con reduce, sort por valor |
+| 6 | Clientes recurrentes (O(n²)) | Ciclo anidado + includes — identificar el cuello de botella |
+| 7 | Medir y proyectar | Medición con performance.now(), proyección a 1M, plan de optimización |
+| 8 | El reporte del Día 1 | Integración de módulos, formato de tabla, verificación automática |
+| 9 | Set y Map para O(n) | Tres versiones de recurrentes: O(n²) → Set O(n) → Map O(n) |
+| 10 | Map para complementos y frecuencias | Combo regalo O(n), producto estrella O(n), cliente único O(n) |
+| 11 | Ventana deslizante y dos punteros | mejorSemana O(n), parMasCercano O(n log n) |
+| 12 | Lanzamiento v1.0 | Integración final, process.argv, benchmark v0.1 vs v1.0, README |
+
+### Estrategias de resolución aplicadas
+
+1. **Método de resolución (Pólya)**: entender → ejemplos → fuerza bruta → optimizar → implementar → probar
+2. **Set**: lookup O(1) para detectar duplicados sin ciclos anidados
+3. **Map**: conteo de frecuencias, complementos, agrupación anidada
+4. **Ventana deslizante**: evitar recalcular sumando lo que entra y restando lo que sale
+5. **Dos punteros**: búsqueda en arreglo ordenado convergiendo desde los extremos
+6. **Benchmarking**: medir antes y después para demostrar la mejora con datos reales
