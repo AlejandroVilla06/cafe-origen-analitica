@@ -241,3 +241,43 @@ El informe fue revisado y se confirmó que:
 - La clasificación Big O de cada función es consistente con el código fuente.
 - Las estimaciones para 1.000.000 de ventas son coherentes con los factores de crecimiento medidos.
 - La explicación para la gerente (MR6) traduce correctamente el problema técnico a lenguaje de negocio.
+
+## MiniReto 9: Clientes recurrentes en tiempo lineal
+
+### Método de resolución
+
+**1. Entender**: dado un arreglo de ventas, encontrar los clientes que compraron más de una vez. Entrada: arreglo de objetos con propiedad `cliente`. Salida: arreglo de códigos de clientes recurrentes. Restricción: debe responder en < 1 segundo con 100.000 ventas.
+
+**2. Ejemplos**:
+- 12 ventas originales → `["C01", "C02", "C03"]` (cada uno aparece 2+ veces)
+- Caso borde: arreglo vacío → `[]`
+- Caso borde: todos distintos → `[]`
+- Caso borde: un solo cliente repitiendo → `["C01"]`
+
+**3. Fuerza bruta** (ya implementada en MR6): `clientesRecurrentes()` compara cada venta con todas las siguientes. Complejidad: O(n²) + O(k) del `includes()`. Con 100.000 ventas: ~64 segundos.
+
+**4. Optimizar**: el trabajo repetido es preguntar "¿ya vi este cliente?" recorriendo un arreglo. Si en vez de un arreglo uso un **Set**, esa pregunta se responde en O(1) promedio. Dos enfoques:
+- **Set**: un Set de vistos, otro de recurrentes. Un solo recorrido.
+- **Map**: un Map que cuenta compras por cliente. Un recorrido para contar, otro para filtrar los que tienen > 1.
+
+**5. Implementar**: `clientesRecurrentesSet(ventas)` y `clientesRecurrentesMap(ventas)` + `comprasPorCliente(ventas)`.
+
+**6. Probar**: verificado que las tres versiones devuelven los mismos clientes (ordenados) con 12 ventas y con 5.000 ventas generadas.
+
+### Tabla comparativa de tiempos
+
+| n       | O(n²) original | O(n) Set   | O(n) Map  |
+|---------|---------------|------------|-----------|
+| 1.000   | 5,77 ms       | 0,23 ms    | 0,61 ms   |
+| 10.000  | 617,18 ms     | 5,58 ms    | 1,17 ms   |
+| 100.000 | — (omitido)   | 33,22 ms   | 8,65 ms   |
+
+La versión original crece cuadráticamente (×100 al multiplicar n por 10). Las optimizadas crecen linealmente.
+
+### Intercambio tiempo / memoria
+
+- **Original O(n²)**: usa O(k) de memoria (solo el arreglo `recurrentes`)
+- **Set O(n)**: usa O(n) de memoria (un Set de todos los clientes vistos + un Set de recurrentes)
+- **Map O(n)**: usa O(c) de memoria (un Map con c clientes únicos, c ≤ n)
+
+Intercambiamos **más memoria** (guardar todos los clientes vistos) por **mucho más tiempo** ahorrado. Con 100.000 ventas pasamos de ~64 segundos a < 35 milisegundos — un factor de ~1.800×.

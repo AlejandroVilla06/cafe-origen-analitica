@@ -252,6 +252,35 @@ function clientesRecurrentes(ventas) {
   return recurrentes;
 }
 
+// MR9: O(n) — dos Sets: uno de vistos, otro de recurrentes
+function clientesRecurrentesSet(ventas) {
+  const vistos = new Set();
+  const recurrentes = new Set();
+  for (const v of ventas) {
+    if (vistos.has(v.cliente)) recurrentes.add(v.cliente);
+    else vistos.add(v.cliente);
+  }
+  return [...recurrentes];
+}
+
+// MR9: O(n) — Map que cuenta compras por cliente
+function comprasPorCliente(ventas) {
+  const conteo = new Map();
+  for (const v of ventas) {
+    conteo.set(v.cliente, (conteo.get(v.cliente) || 0) + 1);
+  }
+  return conteo;
+}
+
+function clientesRecurrentesMap(ventas) {
+  const conteo = comprasPorCliente(ventas);
+  const recurrentes = [];
+  for (const [cliente, compras] of conteo) {
+    if (compras > 1) recurrentes.push(cliente);
+  }
+  return recurrentes;
+}
+
 // Versiones instrumentadas: reciben { ops: 0 } por referencia y cuentan operaciones
 function totalVendidoInst(ventas, contador) {
   let total = 0;
@@ -319,6 +348,9 @@ module.exports = {
   totalCiudadCadena,
   totalCiudadUnaPasada,
   clientesRecurrentes,
+  clientesRecurrentesSet,
+  comprasPorCliente,
+  clientesRecurrentesMap,
   totalVendidoInst,
   ventaMayorInst,
   totalPorCiudadInst,
