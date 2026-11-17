@@ -281,6 +281,74 @@ function clientesRecurrentesMap(ventas) {
   return recurrentes;
 }
 
+// MR10: O(n²) — prueba todos los pares
+function comboRegaloBruto(catalogo, valor) {
+  for (let i = 0; i < catalogo.length; i++) {
+    for (let j = i + 1; j < catalogo.length; j++) {
+      if (catalogo[i].precio + catalogo[j].precio === valor) {
+        return [catalogo[i].producto, catalogo[j].producto];
+      }
+    }
+  }
+  return null;
+}
+
+// MR10: O(n) — Map de complementos, un solo recorrido
+function comboRegalo(catalogo, valor) {
+  const vistos = new Map();
+  for (const p of catalogo) {
+    const falta = valor - p.precio;
+    if (vistos.has(falta)) return [vistos.get(falta), p.producto];
+    vistos.set(p.precio, p.producto);
+  }
+  return null;
+}
+
+// MR10: O(n) — conteo de frecuencias con Map anidado
+function productoEstrellaPorCiudad(ventas) {
+  const ciudades = new Map();
+  for (const v of ventas) {
+    const clave = claveTexto(v.ciudad);
+    if (!ciudades.has(clave)) ciudades.set(clave, new Map());
+    const frecuencias = ciudades.get(clave);
+    frecuencias.set(v.producto, (frecuencias.get(v.producto) || 0) + 1);
+  }
+
+  const resultado = {};
+  for (const [clave, frecuencias] of ciudades) {
+    let estrella = null;
+    let maxFrec = 0;
+    for (const [producto, frec] of frecuencias) {
+      if (frec > maxFrec || (frec === maxFrec && producto < estrella)) {
+        estrella = producto;
+        maxFrec = frec;
+      }
+    }
+
+    let nombreCiudad = formatearNombreLugar(clave);
+    for (const v of ventas) {
+      if (claveTexto(v.ciudad) === clave && tieneTildes(v.ciudad)) {
+        nombreCiudad = formatearNombreLugar(v.ciudad);
+        break;
+      }
+    }
+    resultado[nombreCiudad] = { producto: estrella, apariciones: maxFrec };
+  }
+  return resultado;
+}
+
+// MR10: O(n) — dos recorridos: contar y buscar el primero con 1 compra
+function primerClienteUnico(ventas) {
+  const conteo = new Map();
+  for (const v of ventas) {
+    conteo.set(v.cliente, (conteo.get(v.cliente) || 0) + 1);
+  }
+  for (const v of ventas) {
+    if (conteo.get(v.cliente) === 1) return v.cliente;
+  }
+  return null;
+}
+
 // Versiones instrumentadas: reciben { ops: 0 } por referencia y cuentan operaciones
 function totalVendidoInst(ventas, contador) {
   let total = 0;
@@ -351,6 +419,10 @@ module.exports = {
   clientesRecurrentesSet,
   comprasPorCliente,
   clientesRecurrentesMap,
+  comboRegaloBruto,
+  comboRegalo,
+  productoEstrellaPorCiudad,
+  primerClienteUnico,
   totalVendidoInst,
   ventaMayorInst,
   totalPorCiudadInst,

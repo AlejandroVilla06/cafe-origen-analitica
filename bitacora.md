@@ -281,3 +281,60 @@ La versión original crece cuadráticamente (×100 al multiplicar n por 10). Las
 - **Map O(n)**: usa O(c) de memoria (un Map con c clientes únicos, c ≤ n)
 
 Intercambiamos **más memoria** (guardar todos los clientes vistos) por **mucho más tiempo** ahorrado. Con 100.000 ventas pasamos de ~64 segundos a < 35 milisegundos — un factor de ~1.800×.
+
+## MiniReto 10: Combos de regalo y frecuencias
+
+### Catálogo
+
+Representado como arreglo de objetos `{ producto, precio }` en `src/catalogo.js`. 8 productos con precios de $18.000 a $120.000.
+
+### comboRegalo — búsqueda del complemento
+
+**Fuerza bruta** (`comboRegaloBruto`): dos ciclos anidados, prueba todos los pares. O(n²).
+
+**Optimizada** (`comboRegalo`): un Map de `precio → producto` ya visto. Para cada producto calcula `falta = valor - precio` y pregunta si ya vio uno con ese precio. O(n).
+
+#### Traza de comboRegalo(catalogo, 87000)
+
+```
+Nariño 250g ($26.000) → falta $61.000 → ¿vistos? NO → guardo $26.000
+Huila 500g  ($42.000) → falta $45.000 → ¿vistos? NO → guardo $42.000
+Sierra 500g ($45.000) → falta $42.000 → ¿vistos? SÍ → PAR: [Huila 500g, Sierra 500g]
+```
+
+Solo 3 iteraciones en lugar de probar 28 pares.
+
+#### Pruebas
+
+| Valor   | Resultado                                  |
+|---------|--------------------------------------------|
+| $87.000 | Origen Huila 500 g + Origen Sierra 500 g   |
+| $61.000 | Origen Nariño 250 g + Taza de cerámica     |
+| $1.000  | null (sin combinación)                     |
+
+### productoEstrellaPorCiudad
+
+Map anidado: `ciudad → Map(producto → frecuencia)`. Un recorrido para contar, luego extraemos el máximo de cada ciudad. Regla de desempate: gana el primero alfabéticamente.
+
+| Ciudad   | Producto estrella      | Apariciones |
+|----------|------------------------|-------------|
+| Medellín | Origen Huila 500 g     | 2           |
+| Bogotá   | Origen Nariño 250 g    | 3           |
+| Cali     | Origen Huila 500 g     | 1           |
+| Pereira  | Origen Huila 500 g     | 1           |
+
+### primerClienteUnico
+
+Dos recorridos: (1) Map que cuenta apariciones de cada cliente, (2) segundo recorrido en orden original para encontrar el primero con conteo === 1.
+
+Resultado con datos del Día 1: **C04** ✓ (compró Origen Sierra 500 g el 2026-09-03, una sola vez).
+
+### Clasificación de complejidad
+
+| Función                    | Tiempo | Espacio |
+|----------------------------|--------|---------|
+| comboRegalo                | O(n)   | O(n)    |
+| productoEstrellaPorCiudad  | O(n)   | O(c×p)  |
+| primerClienteUnico         | O(n)   | O(c)    |
+
+Todas son O(n) en tiempo: recorren las ventas/catálogo una o dos veces, sin ciclos anidados sobre los datos.
